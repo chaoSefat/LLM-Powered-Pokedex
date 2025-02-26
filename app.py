@@ -44,7 +44,7 @@ def get_pokemon_name(img_path):
             base64_image = base64.b64encode(img_file.read()).decode('utf-8')
         
         response = client.chat.completions.create(
-            model="gpt-4o",  # Make sure to use a model that supports vision
+            model="gpt-4o",
             messages=[
                 {
                     "role": "system",
