@@ -31,19 +31,21 @@ def encode_image(img_path):
         return img_str
     
 ### Now a function that makes a call to OpenAI API and gets response.
-
 def get_pokemon_name(img_path):
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         return "Error: OpenAI API Key not provided."
+    
     client = OpenAI(api_key=api_key)
-
+    
     try:
-        image_data = encode_image(img_path)
-
+        # Base64 encode the image
+        with open(img_path, "rb") as img_file:
+            base64_image = base64.b64encode(img_file.read()).decode('utf-8')
+        
         response = client.chat.completions.create(
-            model = "gpt4",
-            messages = [
+            model="gpt-4o",  # Make sure to use a model that supports vision
+            messages=[
                 {
                     "role": "system",
                     "content": "You are an assistant that identifies Pokemon from images."
@@ -51,19 +53,19 @@ def get_pokemon_name(img_path):
                 {
                     "role": "user",
                     "content": [
+                        {"type": "text", "text": "What Pokemon is this? Provide only the name."},
                         {
-                            "type": "text",
-                            "content" : "What is the pokemon in this image? Provide only the name of the pokemon. Limit your response to a single token, which is the name of the pokemon.Image is provided as base 64 encoded string."
-                        },
-                        {
-                            "type": "image",
-                            "content": f"encoded string:{image_data}"
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
                         }
                     ]
                 }
             ],
-            max_tokens = 1
+            max_tokens=10
         )
+        
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error Identifying Pokemon: {str(e)}")
