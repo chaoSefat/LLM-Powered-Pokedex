@@ -1,4 +1,4 @@
-# Pokémon Image Identification
+# LLM powered Pokedex
 
 A Python application that uses computer vision and machine learning to identify Pokémon from webcam images and retrieve detailed information about them.
 
